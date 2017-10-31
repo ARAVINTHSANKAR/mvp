@@ -1,0 +1,24 @@
+body {
+	background-color :#d3eda3; 
+}
+
+.loginText, .signUpText {
+	display : inline-block;
+	font-weight : bold;
+}
+
+.loginButtonClass {
+	padding-left : 5px;
+}
+
+.registerButton, .registerEmailTextField, .registerPwdTextField {
+	margin-top : 5px;
+}
+
+.registerButtonText {
+	background-color : #2460a0;
+	border-radius : 8px;
+	color : #ffffff;
+	padding-top : 3px;
+	padding-bottom : 3px;
+}

@@ -1,0 +1,171 @@
+<html lang = "en">
+<head>
+	 <meta charset="utf-8"> 
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+	 	 <link rel = "stylesheet" href = "css/searchTrain.css">
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
+
+</head>
+
+<body ng-app="myApp" ng-controller = "myCtrl">
+
+<div class = "header">
+<div style = "float : right; background-color :#b5fcff; font-weight : bold; padding : 5px; font-size : 20px; margin : 55px;"> Hello {{CurrentUserName}} </div>
+<button class = "btn btn-default" ng-click="logout()"> Logout</button>
+</div>
+
+<div class = "mainContent">
+		<div class="login">
+			<form>
+			<div class="input-group col-xs-12" style = "padding-left : 20px;">
+						<div style = "padding-left : 5px;"><h3 class="searchText" >Traveller Details</h3> </div>
+			<input type="text" placeholder="name" class="form-control" ng-model="name" required><br>
+			</div> <br>
+			<div class="input-group col-xs-12" style = "padding-left : 20px;">
+			<input type="text" placeholder="age" class="form-control"  ng-model="age" required><br>
+			</div> <br>
+			<div class="input-group col-xs-12" style = "padding-left : 20px;">
+			<input type="text" placeholder="gender" class="form-control" ng-model="gender" required><br>
+			</div><br>
+			<div class="input-group col-xs-12" style = "padding-left : 20px;">
+			<input type="text" placeholder="contact" class="form-control" ng-model="contact" required><br>
+			</div><br>
+			<div class="input-group col-xs-12" style = "padding-left : 20px;">
+			<input type="text" placeholder="nationality" class="form-control" ng-model="nationality" required><br>
+			</div><br>
+			<div class="input-group col-xs-12" style = "padding-left : 20px; display : inline-block">
+			<input type="button" value="Submit" class="btn btn-primary" ng-click=submit(name,age,gender,contact,nationality)>
+			</div><br>
+			</form>
+			<p>Ticket status : {{TicketStatus}}</p>
+			<h3>Train Id : {{BookingTrainId}} </h3>
+			<h3> {{CurrentUserPassword}}</h3>
+			<h3>{{CurrentUserId}} </h3>
+		</div>
+	
+</div>
+
+<div class = "footer">
+</div>
+
+
+
+<script>
+
+var app = angular.module('myApp', []);
+app.controller('myCtrl', function ($scope, $http, $window) {
+	
+	var CurrentUserName = sessionStorage.getItem("CurrentUserName");
+	var CurrentUserId = sessionStorage.getItem("CurrentUserId");
+	var CurrentUserEmail = sessionStorage.getItem("CurrentUserEmail");
+	var CurrentUserPassword = sessionStorage.getItem("CurrentUserPassword");
+	
+	$scope.CurrentUserName = CurrentUserName;		
+	$scope.CurrentUserId = CurrentUserId ;
+	$scope.CurrentUserEmail = CurrentUserEmail;
+	$scope.CurrentUserPassword = CurrentUserPassword;
+	
+	var BookingTrainId = sessionStorage.getItem("BookingTrainId");
+	var BookingTrainName = sessionStorage.getItem("BookingTrainName");
+	var BookingTrainNo = sessionStorage.getItem("BookingTrainNo");
+	var BookingTrainFromStation = sessionStorage.getItem("BookingTrainFromStation");
+	var BookingTrainToStation = sessionStorage.getItem("BookingTrainToStation");
+	var BookingTrainDistance = sessionStorage.getItem("BookingTrainDistance");
+	var BookingTrainJourneyDate = sessionStorage.getItem("BookingTrainJourneyDate");
+	var BookingTrainFirstClass = sessionStorage.getItem("BookingTrainFirstClass");
+	var BookingTrainSecondClass = sessionStorage.getItem("BookingTrainSecondClass");
+	var BookingTrainThirdClass = sessionStorage.getItem("BookingTrainThirdClass");
+	var BookingTrainSleeper = sessionStorage.getItem("BookingTrainSleeper");
+	var BookingTrainFirstClassWl = sessionStorage.getItem("BookingTrainFirstClassWl");
+	var BookingTrainSecondClassWl = sessionStorage.getItem("BookingTrainSecondClassWl");
+	var BookingTrainThirdClassWl = sessionStorage.getItem("BookingTrainThirdClassWl");
+	var BookingTrainSleeperWL = sessionStorage.getItem("BookingTrainSleeperWL");
+	
+	$scope.BookingTrainId = BookingTrainId; 
+	$scope.BookingTrainName = BookingTrainName; 
+	$scope.BookingTrainNo = BookingTrainNo;
+	$scope.BookingTrainFromStation = BookingTrainFromStation;
+	$scope.BookingTrainToStation = BookingTrainToStation;
+	$scope.BookingTrainDistance = BookingTrainDistance;
+	$scope.BookingTrainJourneyDate = BookingTrainJourneyDate;
+	$scope.BookingTrainFirstClass = BookingTrainFirstClass;
+	$scope.BookingTrainSecondClass = BookingTrainSecondClass;
+	$scope.BookingTrainThirdClass = BookingTrainThirdClass;
+	$scope.BookingTrainSleeper = BookingTrainSleeper;
+	$scope.BookingTrainFirstClassWl = BookingTrainFirstClassWl;
+	$scope.BookingTrainSecondClassWl = BookingTrainSecondClassWl;
+	$scope.BookingTrainThirdClassWl = BookingTrainThirdClassWl;
+	$scope.BookingTrainSleeperWL = BookingTrainSleeperWL;
+	
+	$scope.submit=function submit(name,age,gender,contact,nationality)	{
+/* 		var data = {
+				user_name: name,
+				age: age,
+				gender: gender,
+				contact: contact,
+				nationality :nationality,
+				login_id : {
+							login_id : CurrentUserId, 
+						    name : CurrentUserName,
+						    email : CurrentUserEmail,
+						    password : CurrentUserPassword
+						   },
+				train_id :{
+							train_id : BookingTrainId,
+				    		train_no: BookingTrainNo,
+				    		train_name: BookingTrainName,
+				       		journey_date : BookingTrainJourneyDate,
+				       		distance : BookingTrainDistance,
+				       		oneA : BookingTrainFirstClass,
+				       		twoA :BookingTrainSecondClass,
+				       		threeA :BookingTrainThirdClass,
+				       		sl :BookingTrainSleeper,
+				       		first_class_ac_wl : BookingTrainFirstClassWl,
+				       		second_class_ac_wl : BookingTrainSecondClassWl,
+				       		third_class_ac_wl : BookingTrainThirdClassWl,
+				       		SL_WL : BookingTrainSleeperWL,
+				       		from_station : BookingTrainFromStation,
+				       		to_station : BookingTrainToStation	
+				           }
+				   }; */
+		 	 		var data = {
+					user_name: name,
+					age: age,
+					gender: gender,
+					contact: contact,
+					nationality :nationality,
+					login_id :{login_id : CurrentUserId}, 
+					train_id :{tarin_id : BookingTrainId}
+					   }; 
+		var url = "http://localhost:8080/irctc/rest/booking/addTravellerDetails";
+		$http.post(url, data)
+			   .then(
+				   function(data, status){
+					$scope.TicketStatus="success";
+					$window.alert("ticket booked successfully");
+					$window.location = 'searchTrain.html';
+				   }, 
+				   function(data, status){
+					$scope.TicketStatus="failure";
+				   }
+				);
+	}
+		$scope.logout = function logout() {
+				sessionStorage.clear();
+				$window.location = "index.html";
+			}
+});
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	 <meta charset="utf-8"> 
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	 
+	<link rel = "stylesheet" href = "css/index.css">
+	
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+<body ng-app = "myApp" ng-controller = "formCtrl">
+
+<div style = "margin-left : 150px; margin-right : 150px; padding-left : 500px;" class="alert alert-info animated fadeInDown" ng-cloak  ng-show="resetted">
+    <strong><i class="icon-attention"></i style = "font-weight : bold;">SignUp Successful !</strong>
+</div>
+
+<div style = "padding-top : 200px; margin-left :500px; id = "newUserId">
+	
+		 <h3 class="signUpText">New User</h3>
+		<span class="glyphicon">&#xe008;</span>
+				<div class="input-group col-xs-3">
+			  	<input type="text" class="form-control"  ng-model = "name" placeholder="Name"/>
+			 	</div>
+			 	
+				 <div class="input-group col-xs-3 registerEmailTextField">
+				<input type="text" class="form-control"  ng-model = "email" placeholder="Email" />
+				</div>
+				
+				 <div class="input-group col-xs-3 registerPwdTextField">
+				<input type="password" class="form-control"  ng-model = "password" placeholder="pin"/>
+				</div>
+				
+				 <div class="input-group col-xs-2 registerButton">
+				<input type = "submit" ng-click = "newLogin(name,email,password)" class = "registerButtonText" value = "Register"/> 
+				</div>
+				
+		</form>
+</div>
+
+
+<script>
+
+var app = angular.module('myApp', []);
+app.controller('formCtrl', function($scope,$http,$window,$timeout) {
+	
+	$scope.newLogin = function newLogin(username,email,pwd){
+		var url = "http://localhost:8080/irctc/rest/booking/add?Name="+username+"&Email="+email+"&Password="+pwd;
+	$http({
+    	upload: {
+            method: 'GET',
+           
+          },
+	url: url
+		}).then(function (response) {
+
+			$scope.resetted = true;
+
+			$timeout(function() {
+
+				$scope.resetted = false;
+				$window.location = 'index.html'; 
+			}, 1000)
+			 
+		}, function (response) {
+			$window.alert("Error! Try Later");
+		});
+	}
+});
+
+</script>
+</body>
+</html>

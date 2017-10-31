@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	 <meta charset="utf-8"> 
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+	 
+	 <link rel = "stylesheet" href = "css/searchTrain.css">
+	 
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
+	
+	<!--  <script src = "js/searchTrain.js"> </script> -->
+</head>
+
+<body ng-app="myApp" ng-controller = "myCtrl">
+<div>
+	<div id = "searchTrainId" class="col-sm-3" style = "display : inline-block;">
+		
+			 <form action="http://localhost:8080/irctc/rest/booking/getTrainDetails" method= "POST" enctype="multipart/form-data">
+				
+					<div style = "padding-left : 5px;"><h3 class="searchText">Search</h3> </div>
+					<div class="input-group col-xs-12" style = "padding-left : 20px;">
+					<input type="text" name="From" class="form-control" ng-model="fromStation" placeholder = "From"/>
+					</div>
+					<br>
+					<div class="input-group col-xs-12" style = "padding-left : 20px;">
+					<input type="text" class="form-control" name="To" ng-model="toStation" placeholder = "To"/>
+					</div>
+					<br>		
+					<div class="input-group col-xs-12" style = "padding-left : 20px;">
+					<input type="text" class="form-control" name="Date" ng-model="journeyDate" placeholder = "Date"/>
+					</div>
+					<br>		
+					<div style = "padding-left : 100px;">
+					<span class="glyphicon glyphicon-name"></span>
+					&nbsp &nbsp<button class="btn btn-info" ng-click="getTrains(fromStation,toStation,journeyDate) ; displayTable()"type="button">Get Train</button>
+					</div>
+			</form>
+		<br>
+			<button class="btn btn-danger" ng-click ="viewMyTickets(CurrentUserId)" >View Booked Tickets </button>
+	</div>
+
+
+	<div id = "seatAavailabilityDiv" style = "display : inline-block;">
+	
+		<div id = "firstClassAvailabilityId" class = "availability h3" ng-show = "firstClassShowVariable">
+			1A-Available : {{firstAcAvailability}} &nbsp <button ng-click = "firstClass()" style = "margin-bottom : 3px;" type="button" class="btn btn-default">Book</button>
+		</div>
+		
+		<div id = "secondClassAvailabilityId"  class = "availability h3" ng-show = "secondClassShowVariable">
+			2A-Available : {{secondAcAvailability}} &nbsp <button ng-click = "secondClass()" style = "margin-bottom : 3px;" type="button" class="btn btn-info">Book</button>
+		</div>
+		
+		<div id = "thirdClassAvailabilityId" class = "availability h3" ng-show = "thirdClassShowVariable">
+			3A-Available : {{thirdAcAvailability}} &nbsp <button ng-click = "thirdClass()" style = "margin-bottom : 3px;" type="button" class="btn btn-primary">Book</button>
+		</div>
+		
+		<div  id = "sleeperClassAvailabilityId" class = "availability h3" ng-show = "sleeperShowVariable">
+			SL-Available : {{sleeperAvailability}} &nbsp <button ng-click = "sleeper()" style = "margin-bottom : 3px;" type="button" class="btn btn">Book</button>
+		</div>
+		
+	
+	</div>
+	
+	<div id = "HelloUser" style = "display : inline-block;">
+	Hello {{CurrentUserName}}
+	<button class = "btn btn-default" ng-click="logout()"> Logout</button>
+	</div>
+	
+</div>
+
+<!-- <!-- <div id = "loading" ng-if ="ajaxLoading" style = "z-index : 10;"> <i class="fa fa-spinner" aria-hidden="true"></i>
+</div>  -->
+
+ {{selectedRow+1}}  
+
+
+<div style = "border-top : 30px;padding-left : 80px; padding-right : 80px;">
+
+	<table class="table table-hover" ng-show = "bookedTickets" >
+	<tr>
+	<th class = "tableHeading">Traveller Name</th>
+	<th class = "tableHeading">Age</th>
+	<th class = "tableHeading">Gender</th>
+	<th class = "tableHeading">Contact</th>
+	<th class = "tableHeading">Nationality</th>
+	<th class = "tableHeading">Train No</th>
+	<th class = "tableHeading">Train Name</th>
+	<th class = "tableHeading">From</th>
+	<th class = "tableHeading">To</th>
+	<th class = "tableHeading">Journey Date</th>
+	<th class = "tableHeading">Cancel Ticket </th>
+	</tr>
+	
+	<tr ng-repeat="item in ticket">
+	<td class = "tableDesc">{{item.user_name}}</td>
+	<td class = "tableDesc">{{item.age}}</td>
+	<td class = "tableDesc">{{item.gender}}</td>
+	<td class = "tableDesc">{{item.contact}}</td>
+	<td class = "tableDesc">{{item.nationality}}</td>
+	<td class = "tableDesc">{{item.train_id.train_no}}</td>
+	<td class = "tableDesc">{{item.train_id.train_name}}</td>
+	<td class = "tableDesc">{{item.train_id.from_station}}</td>
+	<td class = "tableDesc">{{item.train_id.to_station}}</td>
+	<td class = "tableDesc">{{item.train_id.journey_date}}</td>
+	<td class = "tableDesc"><button class = "btn btn-info" ng-click = "cancelTicket($index)">Cancel Ticket</button> </td>
+	</tr>
+	</table>
+</div>
+
+
+	<div style = "padding-left : 80px; padding-right : 80px;" ng-show = "showTable">
+		<table class="table table-hover">
+			<tr>
+				<th ng-hide = "true">#</th>
+				<th class = "tableHeading">Train No.</th>
+				<th class = "tableHeading">Train Name</th>
+				<th class = "tableHeading">From</th>
+				<th class = "tableHeading">To</th>
+				<th class = "tableHeading">Distance</th>
+				<th class = "tableHeading">Class</th>
+			</tr>
+				<tr ng-repeat="item in trainData" >
+				<td ng-hide = "true">{{$index}}</td>
+				<td class = "tableDesc">{{item.train_no}}</td>
+				<td class = "tableDesc">{{item.train_name}}</td>
+				<td class = "tableDesc">{{item.from_station}}</td>
+				<td class = "tableDesc">{{item.to_station}}</td>
+				<td class = "tableDesc">{{item.distance}}</td>
+				<td class = "tableDesc" style = "cursor : pointer;" ng-click="setClickedRow($index)"> <a ng-click = "firstAC($index)">1A</a> <a ng-click = "secondAC($index)">2A</a> <a ng-click = "thirdAC($index)">3A</a> <a ng-click = "Sleeper($index)">SL</a>  </td>
+			</tr>
+		</table> <br>
+	</div>
+	 
+	
+	<script>
+	var app = angular.module('myApp', []);
+	app.controller('myCtrl', function($scope,$http,$window) {
+		
+		var CurrentUserName = sessionStorage.getItem("CurrentUserName");
+		var CurrentUserId = sessionStorage.getItem("CurrentUserId");
+		 var CurrentUserEmail = sessionStorage.getItem("CurrentUserEmail");
+		 var CurrentUserPassword = sessionStorage.getItem("CurrentUserPassword");
+		
+		$scope.CurrentUserName = CurrentUserName;
+		$scope.CurrentUserId = CurrentUserId ;
+		$scope.CurrentUserEmail = CurrentUserEmail;
+		$scope.CurrentUserPassword = CurrentUserPassword;
+		
+		
+		
+		$scope.trainData = [];
+		$scope.selectedRow = null;
+		$scope.getTrains = function getTrains(fromStation,toStation,journeyDate){
+			
+		$scope.ajaxLoading = true;
+		var url = "http://localhost:8080/irctc/rest/booking/getTrainDetails?From="+fromStation+"&To="+toStation+"&Date="+journeyDate;
+		console.log("##-----url--",url)
+		
+		$http({
+	    	upload: {
+	            method: 'GET',
+	           
+	          },
+		url: url
+			}).then(function (response) {
+
+				$scope.ajaxLoading = false;
+		if(response.status == 200)
+				{
+			$scope.showTable = true;
+			$scope.bookedTickets = false;
+			$scope.trainData = response.data;
+				}
+			else {
+				$window.alert("fail");
+			}
+			console.log(response);
+			}, function (response) {
+				$window.alert("oops");
+			});
+		}
+		
+		
+		   
+		$scope.setClickedRow = function setClickedRow(index){
+			$scope.selectedRow = index;
+		}
+			
+		
+		
+		$scope.ajaxLoading = false;
+		
+		
+		$scope.firstClassShowVariable = false;
+		$scope.firstAC = function firstAC(index) {
+			var selectedRow = index;
+			
+ 			$scope.trainId = ($scope.trainData[selectedRow].train_id);
+ 			$scope.trainName = ($scope.trainData[selectedRow].train_name);
+ 			$scope.trainNo = ($scope.trainData[selectedRow].train_no);
+ 			$scope.trainFromStation = ($scope.trainData[selectedRow].from_station);
+ 			$scope.trainToStation = ($scope.trainData[selectedRow].to_station);
+ 			$scope.trainDistance = ($scope.trainData[selectedRow].distance);
+ 			$scope.trainJourneyDate = ($scope.trainData[selectedRow].journey_date);
+ 			$scope.trainFirstClass = ($scope.trainData[selectedRow].oneA);
+ 		 	$scope.trainFirstClass = $scope.trainFirstClass + 1; 
+ 			$scope.trainSecondClass= ($scope.trainData[selectedRow].twoA);
+ 			$scope.trainThirdClass = ($scope.trainData[selectedRow].threeA);
+ 			$scope.trainSleeper = ($scope.trainData[selectedRow].sl);
+ 			$scope.trainFirstClassWL = ($scope.trainData[selectedRow].oneAWL);
+ 			$scope.trainSecondClassWL = ($scope.trainData[selectedRow].twoAWL);
+ 			$scope.trainThirdClassWL = ($scope.trainData[selectedRow].threeAWL);
+ 			$scope.trainSleeperWL = ($scope.trainData[selectedRow].slWL); 
+ 			
+ 			
+			sessionStorage.setItem("BookingTrainId", $scope.trainId); 
+			sessionStorage.setItem("BookingTrainName", $scope.trainName);
+			sessionStorage.setItem("BookingTrainNo", $scope.trainNo);
+			sessionStorage.setItem("BookingTrainFromStation", $scope.trainFromStation);
+			sessionStorage.setItem("BookingTrainToStation", $scope.trainToStation);
+			sessionStorage.setItem("BookingTrainDistance", $scope.trainDistance);
+			sessionStorage.setItem("BookingTrainJourneyDate", $scope.trainJourneyDate);
+			sessionStorage.setItem("BookingTrainFirstClass", $scope.trainFirstClass);
+			sessionStorage.setItem("BookingTrainSecondClass", $scope.trainSecondClass);
+			sessionStorage.setItem("BookingTrainThirdClass", $scope.trainThirdClass);
+			sessionStorage.setItem("BookingTrainSleeper", $scope.trainSleeper);
+			sessionStorage.setItem("BookingTrainFirstClassWl", $scope.trainFirstClassWL);
+			sessionStorage.setItem("BookingTrainSecondClassWl", $scope.trainName);
+			sessionStorage.setItem("BookingTrainThirdClassWl", $scope.trainThirdClassWL);
+			sessionStorage.setItem("BookingTrainSleeperWL", $scope.trainSleeperWL);
+			
+			$scope.firstClassShowVariable = true;
+			$scope.secondClassShowVariable = false;
+			$scope.thirdClassShowVariable = false;
+			$scope.sleeperShowVariable = false;
+			$scope.firstAcAvailability = 50 - ($scope.trainData[selectedRow].oneA);
+		}
+		
+		$scope.secondClassShowVariable = false;
+		$scope.secondAC = function secondAC(index) {
+			
+			var selectedRow = index;
+						
+ 			$scope.trainId = ($scope.trainData[selectedRow].train_id);
+ 			$scope.trainName = ($scope.trainData[selectedRow].train_name);
+ 			$scope.trainNo = ($scope.trainData[selectedRow].train_no);
+ 			$scope.trainFromStation = ($scope.trainData[selectedRow].from_station);
+ 			$scope.trainToStation = ($scope.trainData[selectedRow].to_station);
+ 			$scope.trainDistance = ($scope.trainData[selectedRow].distance);
+ 			$scope.trainJourneyDate = ($scope.trainData[selectedRow].journey_date);
+ 			$scope.trainFirstClass = ($scope.trainData[selectedRow].oneA);
+ 			$scope.trainSecondClass= ($scope.trainData[selectedRow].twoA);
+ 			$scope.trainSecondClass = $scope.trainSecondClass + 1; 
+ 			$scope.trainThirdClass = ($scope.trainData[selectedRow].threeA);
+ 			$scope.trainSleeper = ($scope.trainData[selectedRow].sl);
+ 			$scope.trainFirstClassWL = ($scope.trainData[selectedRow].oneAWL);
+ 			$scope.trainSecondClassWL = ($scope.trainData[selectedRow].twoAWL);
+ 			$scope.trainThirdClassWL = ($scope.trainData[selectedRow].threeAWL);
+ 			$scope.trainSleeperWL = ($scope.trainData[selectedRow].slWL); 
+			
+			sessionStorage.setItem("BookingTrainId", $scope.trainId);
+			sessionStorage.setItem("BookingTrainName", $scope.trainName);
+			sessionStorage.setItem("BookingTrainNo", $scope.trainNo);
+			sessionStorage.setItem("BookingTrainFromStation", $scope.trainFromStation);
+			sessionStorage.setItem("BookingTrainToStation", $scope.trainToStation);
+			sessionStorage.setItem("BookingTrainDistance", $scope.trainDistance);
+			sessionStorage.setItem("BookingTrainJourneyDate", $scope.trainJourneyDate);
+			sessionStorage.setItem("BookingTrainFirstClass", $scope.trainFirstClass);
+			sessionStorage.setItem("BookingTrainSecondClass", $scope.trainSecondClass);
+			sessionStorage.setItem("BookingTrainThirdClass", $scope.trainThirdClass);
+			sessionStorage.setItem("BookingTrainSleeper", $scope.trainSleeper);
+			sessionStorage.setItem("BookingTrainFirstClassWl", $scope.trainFirstClassWL);
+			sessionStorage.setItem("BookingTrainSecondClassWl", $scope.trainName);
+			sessionStorage.setItem("BookingTrainThirdClassWl", $scope.trainThirdClassWL);
+			sessionStorage.setItem("BookingTrainSleeperWL", $scope.trainSleeperWL);
+			
+			$scope.secondClassShowVariable = true;
+			$scope.firstClassShowVariable = false;
+			$scope.thirdClassShowVariable = false;
+			$scope.sleeperShowVariable = false;
+			$scope.secondAcAvailability = 50 - ($scope.trainData[selectedRow].twoA);
+		}
+		
+		$scope.thirdClassShowVariable = false;
+		$scope.thirdAC = function thirdAC(index) {
+
+			var selectedRow = index;
+			
+ 			$scope.trainId = ($scope.trainData[selectedRow].train_id);
+  			$scope.trainName = ($scope.trainData[selectedRow].train_name);
+ 			$scope.trainNo = ($scope.trainData[selectedRow].train_no);
+ 			$scope.trainFromStation = ($scope.trainData[selectedRow].from_station);
+ 			$scope.trainToStation = ($scope.trainData[selectedRow].to_station);
+ 			$scope.trainDistance = ($scope.trainData[selectedRow].distance);
+ 			$scope.trainJourneyDate = ($scope.trainData[selectedRow].journey_date);
+ 			$scope.trainFirstClass = ($scope.trainData[selectedRow].oneA);
+ 			$scope.trainSecondClass= ($scope.trainData[selectedRow].twoA);
+ 			$scope.trainThirdClass = ($scope.trainData[selectedRow].threeA);
+ 	 		$scope.trainThirdClass = $scope.trainThirdClass + 1;  
+ 			$scope.trainSleeper = ($scope.trainData[selectedRow].sl);
+ 			$scope.trainFirstClassWL = ($scope.trainData[selectedRow].oneAWL);
+ 			$scope.trainSecondClassWL = ($scope.trainData[selectedRow].twoAWL);
+ 			$scope.trainThirdClassWL = ($scope.trainData[selectedRow].threeAWL);
+ 			$scope.trainSleeperWL = ($scope.trainData[selectedRow].slWL); 
+ 			
+			sessionStorage.setItem("BookingTrainId", $scope.trainId);
+			sessionStorage.setItem("BookingTrainName", $scope.trainName);
+			sessionStorage.setItem("BookingTrainNo", $scope.trainNo);
+			sessionStorage.setItem("BookingTrainFromStation", $scope.trainFromStation);
+			sessionStorage.setItem("BookingTrainToStation", $scope.trainToStation);
+			sessionStorage.setItem("BookingTrainDistance", $scope.trainDistance);
+			sessionStorage.setItem("BookingTrainJourneyDate", $scope.trainJourneyDate);
+			sessionStorage.setItem("BookingTrainFirstClass", $scope.trainFirstClass);
+			sessionStorage.setItem("BookingTrainSecondClass", $scope.trainSecondClass);
+			sessionStorage.setItem("BookingTrainThirdClass", $scope.trainThirdClass);
+			sessionStorage.setItem("BookingTrainSleeper", $scope.trainSleeper);
+			sessionStorage.setItem("BookingTrainFirstClassWl", $scope.trainFirstClassWL);
+			sessionStorage.setItem("BookingTrainSecondClassWl", $scope.trainName);
+			sessionStorage.setItem("BookingTrainThirdClassWl", $scope.trainThirdClassWL);
+			sessionStorage.setItem("BookingTrainSleeperWL", $scope.trainSleeperWL);
+			
+			$scope.thirdClassShowVariable = true;
+			$scope.firstClassShowVariable = false;
+			$scope.secondClassShowVariable = false;
+			$scope.sleeperShowVariable = false;
+			$scope.thirdAcAvailability = 50 - ($scope.trainData[selectedRow].threeA);
+		}
+		
+		$scope.sleeperShowVariable = false;
+		$scope.Sleeper = function Sleeper(index) {
+			
+			var selectedRow = index;
+			
+   			$scope.trainId = ($scope.trainData[selectedRow].train_id);
+ 			$scope.trainName = ($scope.trainData[selectedRow].train_name);
+ 			$scope.trainNo = ($scope.trainData[selectedRow].train_no);
+ 			$scope.trainFromStation = ($scope.trainData[selectedRow].from_station);
+ 			$scope.trainToStation = ($scope.trainData[selectedRow].to_station);
+ 			$scope.trainDistance = ($scope.trainData[selectedRow].distance);
+ 			$scope.trainJourneyDate = ($scope.trainData[selectedRow].journey_date);
+ 			$scope.trainFirstClass = ($scope.trainData[selectedRow].oneA);
+ 			$scope.trainSecondClass= ($scope.trainData[selectedRow].twoA);
+ 			$scope.trainThirdClass = ($scope.trainData[selectedRow].threeA);
+ 			$scope.trainSleeper = ($scope.trainData[selectedRow].sl);
+			$scope.trainSleeper = $scope.trainSleeper + 1;  
+ 			$scope.trainFirstClassWL = ($scope.trainData[selectedRow].oneAWL);
+ 			$scope.trainSecondClassWL = ($scope.trainData[selectedRow].twoAWL);
+ 			$scope.trainThirdClassWL = ($scope.trainData[selectedRow].threeAWL);
+ 			$scope.trainSleeperWL = ($scope.trainData[selectedRow].slWL); 
+ 			
+			sessionStorage.setItem("BookingTrainId", $scope.trainId);
+			sessionStorage.setItem("BookingTrainName", $scope.trainName);
+			sessionStorage.setItem("BookingTrainNo", $scope.trainNo);
+			sessionStorage.setItem("BookingTrainFromStation", $scope.trainFromStation);
+			sessionStorage.setItem("BookingTrainToStation", $scope.trainToStation);
+			sessionStorage.setItem("BookingTrainDistance", $scope.trainDistance);
+			sessionStorage.setItem("BookingTrainJourneyDate", $scope.trainJourneyDate);
+			sessionStorage.setItem("BookingTrainFirstClass", $scope.trainFirstClass);
+			sessionStorage.setItem("BookingTrainSecondClass", $scope.trainSecondClass);
+			sessionStorage.setItem("BookingTrainThirdClass", $scope.trainThirdClass);
+			sessionStorage.setItem("BookingTrainSleeper", $scope.trainSleeper);
+			sessionStorage.setItem("BookingTrainFirstClassWl", $scope.trainFirstClassWL);
+			sessionStorage.setItem("BookingTrainSecondClassWl", $scope.trainName);
+			sessionStorage.setItem("BookingTrainThirdClassWl", $scope.trainThirdClassWL);
+			sessionStorage.setItem("BookingTrainSleeperWL", $scope.trainSleeperWL);
+			
+			$scope.sleeperShowVariable = true;
+			$scope.firstClassShowVariable = false;
+			$scope.secondClassShowVariable = false;
+			$scope.thirdClassShowVariable = false;
+			$scope.sleeperAvailability = 50 - ($scope.trainData[selectedRow].sl);
+		}
+		
+ 		$scope.showTable = false;
+ 		
+ 		$scope.firstClass = function firstClass() {
+ 			$window.location = 'travellerDetails.html';
+ 		}
+ 		
+		$scope.secondClass = function secondClass() {
+ 			$window.location = 'travellerDetails.html';
+		}	
+
+		$scope.thirdClass = function thirdClass() {
+ 			$window.location = 'travellerDetails.html';
+		}	
+		
+		$scope.sleeper= function sleeper() {
+ 			$window.location = 'travellerDetails.html';
+		}
+		
+		$scope.bookedTickets = false;
+ 			$scope.viewMyTickets = function viewMyTickets(CurrentUserId){
+ 				$scope.showTable = false;
+ 				$scope.bookedTickets = true;
+ 				
+ 			var url = "http://localhost:8080/irctc/rest/booking/getBookedTickets?id="+CurrentUserId;
+ 			console.log("##-----url--",url)
+
+ 			$http({
+ 				upload: {
+ 			        method: 'GET',
+ 			       
+ 			      },
+ 			url: url
+ 				}).then(function (response) {
+ 					$scope.ticket = response.data;
+ 					console.log($scope.ticket)
+ 				}, function (response) {
+ 					$window.alert("No tickets Booked");
+ 				});
+ 			}
+ 			
+ 			$scope.logout = function logout() {
+ 				sessionStorage.clear();
+ 				$window.location = "index.html";
+ 			}
+ 			
+ 			$scope.cancelTicket = function cancelTicket(index) {
+ 				var selectedRow = index;
+ 				$scope.userId = ($scope.ticket[selectedRow].user_id);
+ 				var user_Id = $scope.userId;
+ 				$window.alert("Cancelling");
+ 				
+ 				var url = "http://localhost:8080/irctc/rest/booking/cancelTicket?id="+user_Id;
+ 				console.log("##-----url--",url)
+ 				$http({
+ 	 				upload: {
+ 	 			        method: 'GET',
+ 	 			       
+ 	 			      },
+ 	 			url: url
+ 	 				}).then(function (response) {
+ 	 					$scope.cancelledTickets = response.data;
+ 	 					$window.alert("cancelled succesfully");
+ 	 					console.log($scope.cancelledTickets)
+ 	 				}, function (response) {
+ 	 					$window.alert("Not cancelled");
+ 	 				});
+ 			}
+ 			
+ 		
+	});
+
+	</script>
+	
+	<script src="js/angular.js"></script> 
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang = "en">
+
+<head>	
+	 <meta charset="utf-8"> 
+	 <meta name="viewport" content="width=device-width, initial-scale=1">
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	 
+	<link rel = "stylesheet" href = "css/index.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	
+	 <script src = "js/login.js"> </script>
+	 <script src = "js/script.js"> </script>
+</head>
+
+<body>
+
+<div style = "padding-top : 200px; margin-left :500px;" id = "existingUserId" ng-app="myApp" ng-controller="formCtrl">  
+      <form>
+         <h3 class="loginText">Login</h3>
+	    <div class="input-group col-xs-3">
+	      <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+	      <input id="email" type="text" class="form-control emailInput" name="email" placeholder="Email" ng-model="username">
+	    </div>
+	    <div class="input-group col-xs-3">
+	      <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+	      <input id="password" type="password" class="form-control" name="password" placeholder="pin" ng-model="passwords">
+	    </div>
+  </form> <br>
+      <button ng-click=login(username,passwords) type="button" class="btn btn-primary loginButtonClass">Log In</button>
+      <button type="button" class="btn btn-primary" onclick = "newUser()"> Sign Up </button>
+</div>
+
+</body>
+
+</html>
